@@ -49,6 +49,7 @@ class stores:
         time.sleep(5)
         html=self.driver.page_source
         self._soup_things(html)
+        # self._get_table_row(html)
 
         self.driver.close()
 
@@ -60,26 +61,24 @@ class stores:
         print(self.addresses[0])
         # self.distances=self._get_distance(soup)
         # i=self.distances
-        # self._get_table_row(soup)
-        # print(i[0])
+        self._get_table_row(soup)
 
     def _get_table_row(self,soup):
         rows=soup.select("div",{"class":"table__row"})
         addrs=[]
         for row in rows:
-            i=row.find_all("address",{"class":"address"})
+            i=row.find("address",{"class":"address"})
             addrs.append(i)
-        print(addrs[0])
-        # print(str(rows))
+        # addrs=str(addrs).replace("\n",'').replace('"',"'")
+        self.dists=self._get_distance(soup)
+        self.addrs=self._get_addr(soup)
+        print(self.addrs)
+        print(self.dists)
     def _get_distance(self,soup):
         # div=soup.select_one("table#inventory-checker-table inventory-checker-table--store-availability-price inventory-checker-table--columns-3")
         # distances=soup.find_all('address')
-        distances=self.addresses1.copy()
-        all_dists=[]
-        for dist in distances:
-            dist=str(dist)
-            all_dists.append(dist.split('address__below">')[0])
-        return distances
+        self.distances=re.findall(r"(\d.+) Miles",str(soup))
+        return self.distances
 
 
     def _get_addr(self,soup):
@@ -101,8 +100,8 @@ class stores:
         """
         self.store_paths=[
             {"store":'walmart',"url":'https://brickseek.com/walmart-inventory-checker/',"sku_nums":[142089281,373165472,953499978,916411293]},
-            # {"store":"cvs","url":"https://brickseek.com/cvs-inventory-checker/","sku_nums":[550147,823994]}
-            {"store":"cvs","url":"https://brickseek.com/cvs-inventory-checker/","sku_nums":[550147]}
+            {"store":"cvs","url":"https://brickseek.com/cvs-inventory-checker/","sku_nums":[550147,823994]}
+            # {"store":"cvs","url":"https://brickseek.com/cvs-inventory-checker/","sku_nums":[550147]}
     ]
         for i in self.store_paths:
             if i['store'] == self.store_name:

@@ -1,2 +1,3 @@
 scrape.py
 *.pyc
+src/__pycache__/store_details.cpython-39.pyc
