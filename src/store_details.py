@@ -1,4 +1,5 @@
 import re
+import pandas as pd
 import time
 from selenium.webdriver.common.by import By
 from selenium import webdriver
@@ -30,12 +31,27 @@ class stores:
         """
         skus=self._get_skus()
         url=skus['url']
+        print(f"\n\n {url}\n\n")
         if self.driver_type=='chrome':
 
             for sku in skus['sku_nums']:
                 self._parse_skus_(url,sku)
             print(self.all_quants)
+            print(self.all_addresses)
+            print(self.all_distances)
             return skus
+
+    def _pretty_data(self):
+        # skus=self.store_paths[self.store_name]['sku_num']
+        skus=self._get_skus()
+        skus=skus['sku_nums']
+        data={"skus":skus,"addresses":self.addresses,"distance":self.distances,"quantity":self.all_quants}
+        # for idx,sku in enumerate(skus):
+            
+            # pass
+
+
+
     def _parse_skus_(self,url,sku_num):
         self.driver=webdriver.Chrome(options=self.chrome_options) 
         # time.sleep(5)
@@ -53,8 +69,13 @@ class stores:
         print("clicking dropdown for quantity...")
         sort_by_button=self.driver.find_element(By.ID,"inventory-checker-form-sort")
         sort_by_button.click()
-        item=sort_by_button.find_element(By.XPATH,"/html/body/div[1]/div[3]/div[2]/div/main/div/form/div/div[3]/div/div/select/option[3]")
-        item.click()
+        if self.store_name == "cvs":
+            item=sort_by_button.find_element(By.XPATH,"/html/body/div[1]/div[3]/div[2]/div/main/div/form/div/div[3]/div/div/select/option[3]")
+            item.click()
+        elif self.store_name=="walmart":
+            item=sort_by_button.find_element(By.XPATH,"/html/body/div[1]/div[3]/div[2]/div/main/div/form/div/div[5]/div/div/select/option[4]")
+            item.click()
+            
 
         print("sending click...")
         button_click=self.driver.find_element(By.CLASS_NAME,'bs-button').click()
@@ -62,7 +83,7 @@ class stores:
         self.driver.implicitly_wait(5)
         html=self.driver.page_source
         self._soup_things(html)
-        # self._get_table_row(html)
+        self._pretty_data()
 
         self.driver.close()
 
@@ -71,9 +92,6 @@ class stores:
     def _soup_things(self,html):
         soup=BeautifulSoup(html,"html.parser")
         self.addresses=self._get_addr(soup)
-        # print(self.addresses[0])
-        # self.distances=self._get_distance(soup)
-        # i=self.distances
         self._get_table_row(soup)
 
     def _get_table_row(self,soup):
@@ -96,11 +114,17 @@ class stores:
         # print(soup)
         # pass
     def _get_distance(self,soup):
+        """
+        regex that returns a list of distances in miles
+        """
         self.distances=re.findall(r"(\d.+) Miles",str(soup))
         return self.distances
 
 
     def _get_addr(self,soup):
+        """
+        regexs are hard so this is the most overenginered split statement of all time that will return a list of addresses.
+        """
         self.div=soup.select_one("table#inventory-checker-table inventory-checker-table--store-availability-price inventory-checker-table--columns-3")
         self.addresses1=soup.find_all('address')
         all_addy=[]
@@ -127,7 +151,6 @@ class stores:
                 return i
 
 if __name__=="__main__":
-    i=stores('cvs')    
+    i=stores(store_name='walmart')    
     items=i.scrape_items()
-    # print(items)
     
