@@ -8,6 +8,9 @@ from bs4 import BeautifulSoup
 # from store_details import stores
 class stores:
     def __init__(self,store_name,driver='chrome',zip=44141) -> None:
+        self.all_addresses=[]
+        self.all_distances=[]
+        self.all_quants=[]
         self.store_name=store_name
         self.driver_type="chrome"
         self.zip=zip
@@ -31,10 +34,12 @@ class stores:
 
             for sku in skus['sku_nums']:
                 self._parse_skus_(url,sku)
+            print(self.all_quants)
             return skus
     def _parse_skus_(self,url,sku_num):
         self.driver=webdriver.Chrome(options=self.chrome_options) 
-        time.sleep(5)
+        # time.sleep(5)
+        self.driver.implicitly_wait(3)
         self.driver.get(url)
 
         print("sending keys to sku...")
@@ -44,9 +49,17 @@ class stores:
         print("sending keys to zip...")
         zip_form=self.driver.find_element(By.ID,"inventory-checker-form-zip")
         zip_form.send_keys(self.zip)
+
+        print("clicking dropdown for quantity...")
+        sort_by_button=self.driver.find_element(By.ID,"inventory-checker-form-sort")
+        sort_by_button.click()
+        item=sort_by_button.find_element(By.XPATH,"/html/body/div[1]/div[3]/div[2]/div/main/div/form/div/div[3]/div/div/select/option[3]")
+        item.click()
+
         print("sending click...")
         button_click=self.driver.find_element(By.CLASS_NAME,'bs-button').click()
-        time.sleep(5)
+        # time.sleep(5)
+        self.driver.implicitly_wait(5)
         html=self.driver.page_source
         self._soup_things(html)
         # self._get_table_row(html)
@@ -58,7 +71,7 @@ class stores:
     def _soup_things(self,html):
         soup=BeautifulSoup(html,"html.parser")
         self.addresses=self._get_addr(soup)
-        print(self.addresses[0])
+        # print(self.addresses[0])
         # self.distances=self._get_distance(soup)
         # i=self.distances
         self._get_table_row(soup)
@@ -69,14 +82,20 @@ class stores:
         for row in rows:
             i=row.find("address",{"class":"address"})
             addrs.append(i)
-        # addrs=str(addrs).replace("\n",'').replace('"',"'")
-        self.dists=self._get_distance(soup)
-        self.addrs=self._get_addr(soup)
-        print(self.addrs)
-        print(self.dists)
+        dists=self._get_distance(soup)
+        addrs=self._get_addr(soup)
+        quant=self._get_quantity_(soup)
+        
+        self.all_addresses.append(addrs)
+        self.all_distances.append(dists)
+        self.all_quants.append(quant)
+    def _get_quantity_(self,soup):
+        soup=str(soup)
+        quants=re.findall(r"Qty: (\d+)",soup)
+        return quants
+        # print(soup)
+        # pass
     def _get_distance(self,soup):
-        # div=soup.select_one("table#inventory-checker-table inventory-checker-table--store-availability-price inventory-checker-table--columns-3")
-        # distances=soup.find_all('address')
         self.distances=re.findall(r"(\d.+) Miles",str(soup))
         return self.distances
 
