@@ -4,6 +4,20 @@
 git clone https://github.com/ddroder/covid_test_finder.git
 cd covid_test_finder
 ```
+### 2. Installing Selenium driver.
+This was written with the chrome webdriver, so install the chrome driver and take note of what directory it gets stored to. We will pass the information in later.
+
+steps on linux:
+```
+wget https://chromedriver.storage.googleapis.com/94.0.4606.61/chromedriver_linux64.zip 
+unzip chromedriver_linux64.zip 
+sudo mv chromedriver /usr/bin/chromedriver 
+sudo chown root:root /usr/bin/chromedriver 
+sudo chmod +x /usr/bin/chromedriver 
+```
+
+
+
 # Usage
 This works from the CLI using the main.py script. It expects two parameters:
 

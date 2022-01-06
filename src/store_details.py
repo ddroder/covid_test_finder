@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup
 # from store_details import stores
 class stores:
-    def __init__(self,store_name,driver='chrome',zip=44141) -> None:
+    def __init__(self,store_name,driver='chrome',driver_path='/usr/local/bin/chromedriver',zip=44141,headless=True) -> None:
         self.all_addresses=[]
         self.all_distances=[]
         self.all_quants=[]
@@ -16,19 +16,20 @@ class stores:
         self.driver_type="chrome"
         self.zip=zip
         # self.driver=webdrive.chrome()
-        CHROMEDRIVER_PATH = '/usr/local/bin/chromedriver'
+        CHROMEDRIVER_PATH = driver_path
         s=Service(CHROMEDRIVER_PATH)
         self.chrome_options=Options() 
-        self.chrome_options.add_argument("--headless")
-        # chrome_options.add_argument("--no-sandbox") 
+        if headless:
+            self.chrome_options.add_argument("--headless")
         
 
 
 
-    def scrape_items(self):
+    def scrape_items(self,debug=False):
         """
         scrape function, no inputs needed because of general attributes of init class.
         """
+        self.debug=debug
         skus=self._get_skus()
         url=skus['url']
         print(f"\n\n {url}\n\n")
@@ -44,8 +45,8 @@ class stores:
     def _pretty_data(self):
         # skus=self.store_paths[self.store_name]['sku_num']
         skus=self._get_skus()
-        skus=skus['sku_nums']
-        data={"skus":skus,"addresses":self.addresses,"distance":self.distances,"quantity":self.all_quants}
+        sku_vals=skus['sku_nums']
+        data={"skus":sku_vals,"addresses":self.all_addresses,"distance":self.all_distances,"quantity":self.all_quants}
         # for idx,sku in enumerate(skus):
             
             # pass
@@ -53,20 +54,22 @@ class stores:
 
 
     def _parse_skus_(self,url,sku_num):
+        """
+        basic selenium things. clicks through the website and passes the source to beautiful soup for further analysis.
+        """
         self.driver=webdriver.Chrome(options=self.chrome_options) 
-        # time.sleep(5)
         self.driver.implicitly_wait(3)
         self.driver.get(url)
-
-        print("sending keys to sku...")
+        if self.debug:
+            print("sending keys to sku...")
         sku_form=self.driver.find_element(By.ID,"inventory-checker-form-sku")
         sku_form.send_keys(sku_num)
-
-        print("sending keys to zip...")
+        if self.debug:
+            print("sending keys to zip...")
         zip_form=self.driver.find_element(By.ID,"inventory-checker-form-zip")
         zip_form.send_keys(self.zip)
-
-        print("clicking dropdown for quantity...")
+        if self.debug:
+            print("clicking dropdown for quantity...")
         sort_by_button=self.driver.find_element(By.ID,"inventory-checker-form-sort")
         sort_by_button.click()
         if self.store_name == "cvs":
@@ -76,10 +79,9 @@ class stores:
             item=sort_by_button.find_element(By.XPATH,"/html/body/div[1]/div[3]/div[2]/div/main/div/form/div/div[5]/div/div/select/option[4]")
             item.click()
             
-
-        print("sending click...")
+        if self.debug:
+            print("sending click...")
         button_click=self.driver.find_element(By.CLASS_NAME,'bs-button').click()
-        # time.sleep(5)
         self.driver.implicitly_wait(5)
         html=self.driver.page_source
         self._soup_things(html)
@@ -90,11 +92,18 @@ class stores:
 
 
     def _soup_things(self,html):
+        """
+        soupify everything and get row data.
+        """
         soup=BeautifulSoup(html,"html.parser")
-        self.addresses=self._get_addr(soup)
         self._get_table_row(soup)
 
     def _get_table_row(self,soup):
+        """
+        grabs individual rows from the website to scrape.
+        """
+
+
         rows=soup.select("div",{"class":"table__row"})
         addrs=[]
         for row in rows:
@@ -107,12 +116,17 @@ class stores:
         self.all_addresses.append(addrs)
         self.all_distances.append(dists)
         self.all_quants.append(quant)
+
+
     def _get_quantity_(self,soup):
+        """
+        helper function that returns a list of strings of the quantities. I should probably make it a list of floats, but whatever. 
+        """
         soup=str(soup)
         quants=re.findall(r"Qty: (\d+)",soup)
         return quants
-        # print(soup)
-        # pass
+
+
     def _get_distance(self,soup):
         """
         regex that returns a list of distances in miles

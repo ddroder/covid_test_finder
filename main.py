@@ -8,7 +8,6 @@ parser.add_argument('--zip',help='zip code to look at.',required=True,type=int)
 
 if __name__=="__main__":
     args=parser.parse_args()
-    # print(args.store)
     i=stores(store_name=args.store,zip=args.zip)    
     items=i.scrape_items()
     print(items)

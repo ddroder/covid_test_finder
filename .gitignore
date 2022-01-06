@@ -1,3 +1,4 @@
 scrape.py
 *.pyc
 *.pyc
+src/__pycache__/
