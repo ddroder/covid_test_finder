@@ -35,5 +35,8 @@ python3 main.py --store cvs --zip 44321
 ```
 
 
-
+# TODO
+Return prettified data 
+Add email updating
+Better documentation
 
