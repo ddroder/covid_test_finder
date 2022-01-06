@@ -37,19 +37,22 @@ class stores:
 
             for sku in skus['sku_nums']:
                 self._parse_skus_(url,sku)
-            print(self.all_quants)
-            print(self.all_addresses)
-            print(self.all_distances)
+            # print(self.all_quants)
+            # print(self.all_addresses)
+            # print(self.all_distances)
             return skus
 
     def _pretty_data(self):
-        # skus=self.store_paths[self.store_name]['sku_num']
         skus=self._get_skus()
         sku_vals=skus['sku_nums']
         data={"skus":sku_vals,"addresses":self.all_addresses,"distance":self.all_distances,"quantity":self.all_quants}
-        # for idx,sku in enumerate(skus):
+        for idx,sku in enumerate(sku_vals):
+            addresses=data['addresses'][0]
+            sku_col=[f"{sku}" for _ in addresses]
+            quant_col=data['quantity'][idx]
+            pass
+
             
-            # pass
 
 
 
@@ -157,8 +160,8 @@ class stores:
         """
         self.store_paths=[
             {"store":'walmart',"url":'https://brickseek.com/walmart-inventory-checker/',"sku_nums":[142089281,373165472,953499978,916411293]},
-            {"store":"cvs","url":"https://brickseek.com/cvs-inventory-checker/","sku_nums":[550147,823994]}
-            # {"store":"cvs","url":"https://brickseek.com/cvs-inventory-checker/","sku_nums":[550147]}
+            {"store":"cvs","url":"https://brickseek.com/cvs-inventory-checker/","sku_nums":[550147,823994]},
+            {"store":"testing","url":"https://brickseek.com/cvs-inventory-checker/","sku_nums":[550147]}
     ]
         for i in self.store_paths:
             if i['store'] == self.store_name:
