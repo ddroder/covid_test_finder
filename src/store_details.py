@@ -31,12 +31,12 @@ class stores:
         scrape function, no inputs needed because of general attributes of init class.
         """
         self.debug=debug
-        skus=self._get_skus()
-        url=skus['url']
+        self.skus=self._get_skus()
+        url=self.skus['url']
         print(f"\n\n {url}\n\n")
         if self.driver_type=='chrome':
 
-            for sku in skus['sku_nums']:
+            for sku in self.skus['sku_nums']:
                 self._parse_skus_(url,sku)
             # print(self.all_quants)
             # print(self.all_addresses)
@@ -48,13 +48,18 @@ class stores:
         helper function that returns list of DFs with all of the information.
         """
         self.frames=[]
-        skus=self._get_skus()
-        sku_vals=skus['sku_nums']
+        # skus=self._get_skus()
+        sku_vals=self.skus['sku_nums']
         data={"skus":sku_vals,"addresses":self.all_addresses,"distance":self.all_distances,"quantity":self.all_quants}
         addresses=data['addresses'][0] #this can be hard set since it shouldnt change
         distances=data['distance'][0]  #this can be hard set since it shouldnt change.
+        # names=self.store_paths['name']
+        names=self.skus['names']
+        # print(f"\n\n{names}\n\n")
         for idx,sku in enumerate(sku_vals):
+            name=names[idx]
             sku_col=[f"{sku}" for _ in addresses]
+            name_col=[f"{name}" for _ in addresses]
             try:
                 quant_col=data['quantity'][idx]
                 if len(quant_col) != len(addresses):
@@ -65,7 +70,7 @@ class stores:
             #data integrity check
             if len(distances) != len(addresses):
                 distances+=["NA"]*(len(addresses)-len(distances))
-            data_dict={"sku":sku_col,"quants":quant_col,"address":addresses,"distance":distances}
+            data_dict={"sku":sku_col,"name":name_col,"quants":quant_col,"address":addresses,"distance":distances}
             self.frames.append(pd.DataFrame(data_dict))
         return self.frames
 
@@ -174,9 +179,13 @@ class stores:
                 STORE_NAME,URL,SKU_NUMBERS
         """
         self.store_paths=[
-            {"store":'walmart',"url":'https://brickseek.com/walmart-inventory-checker/',"sku_nums":[142089281,373165472,953499978,916411293]},
-            {"store":"cvs","url":"https://brickseek.com/cvs-inventory-checker/","sku_nums":[550147,823994]},
-            {"store":"testing","url":"https://brickseek.com/cvs-inventory-checker/","sku_nums":[550147]}
+            {"store":'walmart',"url":'https://brickseek.com/walmart-inventory-checker/',"sku_nums":[142089281,373165472,953499978,916411293],
+            "names":["BinaxNOW COVID‐19 Antigen Self Test (2 Count)",
+            "On/Go COVID-19 Antigen Self-Test - Tech-Enabled, At-Home Covid Test (OTC)- Results in 10 Minutes - 2 Test Kit",
+            "Ellume COVID Test Kit, At Home COVID-19 Home Test Kit, Rapid Antigen Self Test, Results in 15 minutes to your free mobile app, FDA Emergency Use Authorization, 1 Pack",
+            "InteliSwab™ COVID-19 Rapid Antigen Test, For results anytime and anywhere (2 Tests)"]},
+            {"store":"cvs","url":"https://brickseek.com/cvs-inventory-checker/","sku_nums":[550147,823994],"names":["Abbott BinaxNOW COVID-19 Antigen Self Test (2 tests for serial testing)","FlowFlex COVID-19 Antigen Home Test",]},
+            {"store":"testing","url":"https://brickseek.com/cvs-inventory-checker/","sku_nums":[550147],"names":["Abbott BinaxNOW COVID-19 Antigen Self Test (2 tests for serial testing)"]}
     ]
         for i in self.store_paths:
             if i['store'] == self.store_name:
