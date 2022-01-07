@@ -1,4 +1,5 @@
 scrape.py
 *.pyc
 *.pyc
-src/__pycache__/
+*cpython-39*
+src/__pycache__/store_details.cpython-39.pyc

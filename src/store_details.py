@@ -1,4 +1,5 @@
 import re
+from numpy import add
 import pandas as pd
 import time
 from selenium.webdriver.common.by import By
@@ -40,19 +41,33 @@ class stores:
             # print(self.all_quants)
             # print(self.all_addresses)
             # print(self.all_distances)
-            return skus
+            return self.frames
 
     def _pretty_data(self):
+        """
+        helper function that returns list of DFs with all of the information.
+        """
+        self.frames=[]
         skus=self._get_skus()
         sku_vals=skus['sku_nums']
         data={"skus":sku_vals,"addresses":self.all_addresses,"distance":self.all_distances,"quantity":self.all_quants}
         addresses=data['addresses'][0] #this can be hard set since it shouldnt change
+        distances=data['distance'][0]  #this can be hard set since it shouldnt change.
         for idx,sku in enumerate(sku_vals):
             sku_col=[f"{sku}" for _ in addresses]
-            quant_col=data['quantity'][idx]
-            pass
-
-            
+            try:
+                quant_col=data['quantity'][idx]
+                if len(quant_col) != len(addresses):
+                    quant_col+=['0']*(len(addresses)-len(quant_col))
+            except:
+                #there are no tests at all i think?
+                quant_col=[0 for i in range(len(addresses))]
+            #data integrity check
+            if len(distances) != len(addresses):
+                distances+=["NA"]*(len(addresses)-len(distances))
+            data_dict={"sku":sku_col,"quants":quant_col,"address":addresses,"distance":distances}
+            self.frames.append(pd.DataFrame(data_dict))
+        return self.frames
 
 
 
@@ -170,4 +185,4 @@ class stores:
 if __name__=="__main__":
     i=stores(store_name='walmart')    
     items=i.scrape_items()
-    
+    # print(items[0])
