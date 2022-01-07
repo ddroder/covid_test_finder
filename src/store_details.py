@@ -46,8 +46,8 @@ class stores:
         skus=self._get_skus()
         sku_vals=skus['sku_nums']
         data={"skus":sku_vals,"addresses":self.all_addresses,"distance":self.all_distances,"quantity":self.all_quants}
+        addresses=data['addresses'][0] #this can be hard set since it shouldnt change
         for idx,sku in enumerate(sku_vals):
-            addresses=data['addresses'][0]
             sku_col=[f"{sku}" for _ in addresses]
             quant_col=data['quantity'][idx]
             pass
