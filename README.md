@@ -1,10 +1,10 @@
 # Installation/setup
-### 1. Clone repo and change to directory
+## 1. Clone repo and change to directory
 ```
 git clone https://github.com/ddroder/covid_test_finder.git
 cd covid_test_finder
 ```
-### 2. Installing Selenium driver.
+## 2. Installing Selenium driver.
 This was written with the chrome webdriver, so install the chrome driver and take note of what directory it gets stored to. We will pass the information in later.
 
 steps on linux:
@@ -39,5 +39,9 @@ this follows the same logic as the scraping usage. You do not need to provide th
 <br>
 <br>
 This flag will look for the file path to a json file. Look at example.json for reference on what it should look like.
+<br>
+```
+python3 main.py -f <PATH-TO-YOUR-JSON-FILE>
+```
 
 
