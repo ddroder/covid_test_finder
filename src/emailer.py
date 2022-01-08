@@ -17,6 +17,12 @@ class emailer:
         self._send_email()
 
     def _format_msg(self,person):
+        """
+        does all of the scraping based on things 
+        found in json file. Then converts all DF's
+        into HTML-ified single DF and attachs that to
+        the message.
+        """
         user_email,user_store,user_zip=person[0],person[1],person[2]
         scraping=stores(user_store,zip=user_zip)
         info=scraping.scrape_items()
@@ -31,6 +37,11 @@ class emailer:
 
         
     def _send_email(self):
+        """
+        initalizes SMTP server through gmail on port 587.
+        Then sends HTML-ified version of scraped data through email
+        given from json file to recipients listed in json file.
+        """
         sender_addy=self.creds['personal-email']
         mailing_list=self.creds['mailing-list-info']
         sender_pass=self.creds['personal-password']
@@ -44,13 +55,13 @@ class emailer:
 
 
     def _read_json(self,path):
+        """
+        helper function to read in json data
+        """
         f=open(path)
         file=json.load(f)
         return file
 
 
 if __name__=="__main__":
-    # email=emailer("/home/danieldroder/Coding/covid_test_finder/real.json")
-    # print(email.creds)
-    # email._send_email()
     pass

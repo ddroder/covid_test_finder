@@ -7,7 +7,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup
-# from store_details import stores
 class stores:
     def __init__(self,store_name,driver='chrome',driver_path='/usr/local/bin/chromedriver',zip=44141,headless=True) -> None:
         self.all_addresses=[]
@@ -16,7 +15,6 @@ class stores:
         self.store_name=store_name
         self.driver_type="chrome"
         self.zip=zip
-        # self.driver=webdrive.chrome()
         CHROMEDRIVER_PATH = driver_path
         s=Service(CHROMEDRIVER_PATH)
         self.chrome_options=Options() 
@@ -33,14 +31,10 @@ class stores:
         self.debug=debug
         self.skus=self._get_skus()
         url=self.skus['url']
-        print(f"\n\n {url}\n\n")
         if self.driver_type=='chrome':
 
             for sku in self.skus['sku_nums']:
                 self._parse_skus_(url,sku)
-            # print(self.all_quants)
-            # print(self.all_addresses)
-            # print(self.all_distances)
             return self.frames
 
     def _pretty_data(self):
@@ -48,14 +42,11 @@ class stores:
         helper function that returns list of DFs with all of the information.
         """
         self.frames=[]
-        # skus=self._get_skus()
         sku_vals=self.skus['sku_nums']
         data={"skus":sku_vals,"addresses":self.all_addresses,"distance":self.all_distances,"quantity":self.all_quants}
         addresses=data['addresses'][0] #this can be hard set since it shouldnt change
         distances=data['distance'][0]  #this can be hard set since it shouldnt change.
-        # names=self.store_paths['name']
         names=self.skus['names']
-        # print(f"\n\n{names}\n\n")
         for idx,sku in enumerate(sku_vals):
             name=names[idx]
             sku_col=[f"{sku}" for _ in addresses]
@@ -194,4 +185,3 @@ class stores:
 if __name__=="__main__":
     i=stores(store_name='walmart')    
     items=i.scrape_items()
-    # print(items[0])
