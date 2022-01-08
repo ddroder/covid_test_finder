@@ -18,7 +18,7 @@ sudo chmod +x /usr/bin/chromedriver
 
 
 
-# Usage
+# Scraping Usage
 This works from the CLI using the main.py script. It expects two parameters:
 
 --store (currently only walmart and cvs)
@@ -34,11 +34,10 @@ python3 main.py --store walmart --zip 44131
 python3 main.py --store cvs --zip 44321
 ```
 
+# Email usage
+this follows the same logic as the scraping usage. You do not need to provide the store or the zip code CLI arguments.But to email you must also add the -f/--file flag, this will contain that information.
+<br>
+<br>
+This flag will look for the file path to a json file. Look at example.json for reference on what it should look like.
 
-# TODO
-Return prettified data 
-<br>
-Add email updating
-<br>
-Better documentation
 
