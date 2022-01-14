@@ -1,3 +1,6 @@
 pandas
 selenium
 BeautifulSoup4
+Google Chrome
+Google ChromeDriver of a similar version
+external access to https://brickseek.com/walmart-inventory-checker/
