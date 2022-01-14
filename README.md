@@ -18,9 +18,9 @@ sudo chmod +x /usr/bin/chromedriver
 ```
 The Chrome web driver needs chrome to be installed to function and is version specific
 If you do not have Chrome installed use the following to install
-'''
+```
 sudo dnf install https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
-'''
+```
 Following that you may need to reinstall the appropriate version of the chrome driver
 
 
